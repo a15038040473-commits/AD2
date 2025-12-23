@@ -550,21 +550,25 @@ const MaterialAIAnalysis = () => {
   );
 };
 
-export const MaterialAnalysis: React.FC = () => {
+interface MaterialAnalysisProps {
+  onNavigateToMaterials?: () => void;
+}
+
+export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateToMaterials }) => {
   const [showAllVideos, setShowAllVideos] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
   const topVideos = [
-    { rank: 1, name: "25120206-抖音S-校企-APP01-视频-情景剧多人-竖版-20753", id: "87827381723871", spend: "58,824.06", impressions: "3,394,601", clicks: "3,190", ctr: "0.95%", reg: 1596, cost: 36.86, score: 92.5, platforms: {douyin: 51, kuaishou: 39, baidu: 10} },
-    { rank: 2, name: "25120901-抖音S-校企-APP01-视频-情景剧多人-横版-20754", id: "87827381723872", spend: "42,156.80", impressions: "2,156,780", clicks: "2,845", ctr: "1.12%", reg: 1420, cost: 29.69, score: 90.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
-    { rank: 3, name: "25120903-抖音S-校企-APP01-视频-真人口播单人-横版-20755", id: "87827381723873", spend: "31,832.09", impressions: "1,531,899", clicks: "1,764", ctr: "1.25%", reg: 856, cost: 37.19, score: 88.0, platforms: {douyin: 45, kuaishou: 45, baidu: 10} },
-    { rank: 4, name: "25121501-抖音S-新媒体-APP01-视频-情景剧多人-横版-20777", id: "87827381723874", spend: "28,450.50", impressions: "1,245,600", clicks: "1,450", ctr: "1.16%", reg: 750, cost: 37.93, score: 86.5, platforms: {douyin: 55, kuaishou: 35, baidu: 10} },
-    { rank: 5, name: "25122002-快手-校企-APP02-视频-口播-竖版-20801", id: "87827381723875", spend: "25,120.30", impressions: "980,500", clicks: "1,120", ctr: "1.14%", reg: 620, cost: 40.52, score: 85.0, platforms: {douyin: 20, kuaishou: 70, baidu: 10} },
-    { rank: 6, name: "25122205-百度-成考-APP01-视频-情景剧-横版-20815", id: "87827381723876", spend: "21,560.80", impressions: "856,200", clicks: "980", ctr: "1.14%", reg: 510, cost: 42.28, score: 83.5, platforms: {douyin: 10, kuaishou: 20, baidu: 70} },
-    { rank: 7, name: "25122508-抖音S-自考-APP01-视频-混剪-竖版-20833", id: "87827381723877", spend: "18,950.20", impressions: "720,150", clicks: "850", ctr: "1.18%", reg: 450, cost: 42.11, score: 82.0, platforms: {douyin: 80, kuaishou: 10, baidu: 10} },
-    { rank: 8, name: "25122810-快手-二建-APP03-视频-口播-横版-20855", id: "87827381723878", spend: "15,680.60", impressions: "560,800", clicks: "620", ctr: "1.11%", reg: 380, cost: 41.26, score: 80.5, platforms: {douyin: 15, kuaishou: 75, baidu: 10} },
-    { rank: 9, name: "25123012-百度-教资-APP01-视频-图文-横版-20888", id: "87827381723879", spend: "12,450.40", impressions: "450,200", clicks: "510", ctr: "1.13%", reg: 290, cost: 42.93, score: 79.0, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
-    { rank: 10, name: "25123115-抖音S-会计-APP02-视频-情景剧-竖版-20901", id: "87827381723880", spend: "9,850.10", impressions: "320,100", clicks: "350", ctr: "1.09%", reg: 180, cost: 54.72, score: 77.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
+    { rank: 1, name: "25120206-抖音S-校企-APP01-视频-情景剧多人-竖版-20753", id: "87827381723871", spend: "58,824.06", impressions: "3,394,601", clicks: "3,190", ctr: "0.95%", reg: 1596, cost: 36.86, regRate: '50.03%', score: 92.5, platforms: {douyin: 51, kuaishou: 39, baidu: 10} },
+    { rank: 2, name: "25120901-抖音S-校企-APP01-视频-情景剧多人-横版-20754", id: "87827381723872", spend: "42,156.80", impressions: "2,156,780", clicks: "2,845", ctr: "1.12%", reg: 1420, cost: 29.69, regRate: '49.91%', score: 90.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
+    { rank: 3, name: "25120903-抖音S-校企-APP01-视频-真人口播单人-横版-20755", id: "87827381723873", spend: "31,832.09", impressions: "1,531,899", clicks: "1,764", ctr: "1.25%", reg: 856, cost: 37.19, regRate: '48.53%', score: 88.0, platforms: {douyin: 45, kuaishou: 45, baidu: 10} },
+    { rank: 4, name: "25121501-抖音S-新媒体-APP01-视频-情景剧多人-横版-20777", id: "87827381723874", spend: "28,450.50", impressions: "1,245,600", clicks: "1,450", ctr: "1.16%", reg: 750, cost: 37.93, regRate: '51.72%', score: 86.5, platforms: {douyin: 55, kuaishou: 35, baidu: 10} },
+    { rank: 5, name: "25122002-快手-校企-APP02-视频-口播-竖版-20801", id: "87827381723875", spend: "25,120.30", impressions: "980,500", clicks: "1,120", ctr: "1.14%", reg: 620, cost: 40.52, regRate: '55.36%', score: 85.0, platforms: {douyin: 20, kuaishou: 70, baidu: 10} },
+    { rank: 6, name: "25122205-百度-成考-APP01-视频-情景剧-横版-20815", id: "87827381723876", spend: "21,560.80", impressions: "856,200", clicks: "980", ctr: "1.14%", reg: 510, cost: 42.28, regRate: '52.04%', score: 83.5, platforms: {douyin: 10, kuaishou: 20, baidu: 70} },
+    { rank: 7, name: "25122508-抖音S-自考-APP01-视频-混剪-竖版-20833", id: "87827381723877", spend: "18,950.20", impressions: "720,150", clicks: "850", ctr: "1.18%", reg: 450, cost: 42.11, regRate: '52.94%', score: 82.0, platforms: {douyin: 80, kuaishou: 10, baidu: 10} },
+    { rank: 8, name: "25122810-快手-二建-APP03-视频-口播-横版-20855", id: "87827381723878", spend: "15,680.60", impressions: "560,800", clicks: "620", ctr: "1.11%", reg: 380, cost: 41.26, regRate: '61.29%', score: 80.5, platforms: {douyin: 15, kuaishou: 75, baidu: 10} },
+    { rank: 9, name: "25123012-百度-教资-APP01-视频-图文-横版-20888", id: "87827381723879", spend: "12,450.40", impressions: "450,200", clicks: "510", ctr: "1.13%", reg: 290, cost: 42.93, regRate: '56.86%', score: 79.0, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
+    { rank: 10, name: "25123115-抖音S-会计-APP02-视频-情景剧-竖版-20901", id: "87827381723880", spend: "9,850.10", impressions: "320,100", clicks: "350", ctr: "1.09%", reg: 180, cost: 54.72, regRate: '51.43%', score: 77.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
   ];
 
   const displayedVideos = showAllVideos ? topVideos : topVideos.slice(0, 5);
@@ -647,8 +651,11 @@ export const MaterialAnalysis: React.FC = () => {
             <h3 className="font-semibold text-gray-800">爆款视频TOP10</h3>
             <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">数据处理规则为"按照素材名称相同的视频在不同平台同指标数据直接相加"</span>
           </div>
-          <button className="text-sm bg-[#0EA5E9] text-white px-4 py-1.5 rounded hover:bg-[#0284c7] transition-colors">
-            更多素材数据
+          <button 
+            onClick={onNavigateToMaterials}
+            className="text-sm bg-[#0EA5E9] text-white px-4 py-1.5 rounded hover:bg-[#0284c7] transition-colors"
+          >
+            全部素材
           </button>
         </div>
         <div className="overflow-x-auto">
@@ -664,6 +671,7 @@ export const MaterialAnalysis: React.FC = () => {
                 <th className="px-4 py-4 font-medium text-right">点击率</th>
                 <th className="px-4 py-4 font-medium text-right">注册数</th>
                 <th className="px-4 py-4 font-medium text-right">注册成本</th>
+                <th className="px-4 py-4 font-medium text-right">注册率</th>
                 <th className="px-4 py-4 font-medium text-right">综合得分</th>
                 <th className="px-6 py-4 font-medium">平台分布</th>
                 <th className="px-6 py-4 font-medium text-center">操作</th>
@@ -696,6 +704,7 @@ export const MaterialAnalysis: React.FC = () => {
                   <td className="px-4 py-4 text-right text-gray-600">{item.ctr}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.reg}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.cost}</td>
+                  <td className="px-4 py-4 text-right text-gray-600">{item.regRate}</td>
                   <td className="px-4 py-4 text-right text-gray-900 font-medium">{item.score}</td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1 text-[10px] text-gray-500 w-24">
@@ -707,7 +716,7 @@ export const MaterialAnalysis: React.FC = () => {
                   <td className="px-6 py-4 text-center">
                     <button 
                       onClick={() => setSelectedVideo(item.id)}
-                      className="text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                      className="text-white bg-[#8B5CF6] hover:bg-[#7C3AED] px-3 py-1.5 rounded text-xs font-medium transition-colors shadow-sm"
                     >
                       AI 智能分析
                     </button>

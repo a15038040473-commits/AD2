@@ -41,7 +41,10 @@ const App: React.FC = () => {
         </div>
 
         {activePage === '素材分析看板' ? (
-          <MaterialAnalysis />
+          <MaterialAnalysis onNavigateToMaterials={() => {
+            setActivePage('广告投放看板');
+            setActiveTab('素材');
+          }} />
         ) : (
           /* Default/Ad Delivery Dashboard View */
           <>
