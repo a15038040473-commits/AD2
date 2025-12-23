@@ -5,6 +5,7 @@ import { DataOverview } from './components/DataOverview';
 import { AccountDataTable } from './components/AccountDataTable';
 import { ProjectDataTable } from './components/ProjectDataTable';
 import { AdGroupDataTable } from './components/AdGroupDataTable';
+import { CreativeDataTable } from './components/CreativeDataTable';
 import { MaterialAnalysis } from './components/MaterialAnalysis';
 import MaterialDataTable from './components/MaterialDataTable';
 import { Search, Calendar, HelpCircle, ChevronRight } from 'lucide-react';
@@ -14,7 +15,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('账户');
   const [searchText, setSearchText] = useState('');
 
-  // Handle drill down: Account -> Project -> Ad -> Material
+  // Handle drill down: Account -> Project -> Ad -> Creative -> Material
   const handleDrillDown = (currentLevel: string, name: string) => {
     setSearchText(name); // Optional: simulate filtering by setting search text
     if (currentLevel === '账户') {
@@ -22,6 +23,8 @@ const App: React.FC = () => {
     } else if (currentLevel === '项目') {
       setActiveTab('广告');
     } else if (currentLevel === '广告') {
+      setActiveTab('创意');
+    } else if (currentLevel === '创意') {
       setActiveTab('素材');
     }
   };
@@ -97,7 +100,7 @@ const App: React.FC = () => {
             {/* Tab Selection */}
             <div className="flex items-center justify-between border-b border-gray-100 mb-6">
               <div className="flex gap-8">
-                {['账户', '项目', '广告', '素材'].map((tab) => (
+                {['账户', '项目', '广告', '创意', '素材'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -126,16 +129,22 @@ const App: React.FC = () => {
                     <a href="#" onClick={() => setActiveTab('项目')} className="text-blue-600 hover:underline">库课专升本账户01</a>
                   </>
                 )}
-                {(activeTab === '广告' || activeTab === '素材') && (
+                {(activeTab === '广告' || activeTab === '创意' || activeTab === '素材') && (
                   <>
                     <span className="text-gray-300">/</span>
                     <a href="#" onClick={() => setActiveTab('广告')} className="text-blue-600 hover:underline">项目名称(20057716)</a>
                   </>
                 )}
+                 {(activeTab === '创意' || activeTab === '素材') && (
+                   <>
+                    <span className="text-gray-300">/</span>
+                    <a href="#" onClick={() => setActiveTab('创意')} className="text-blue-600 hover:underline">广告组名称(20057716)</a>
+                   </>
+                )}
                 {activeTab === '素材' && (
                    <>
                     <span className="text-gray-300">/</span>
-                    <a href="#" className="text-blue-600 hover:underline">广告组名称(20057716)</a>
+                    <a href="#" className="text-blue-600 hover:underline">创意名称(20057716)</a>
                    </>
                 )}
               </div>
@@ -149,6 +158,7 @@ const App: React.FC = () => {
                     activeTab === '账户' ? "请输入账户名称/ID" : 
                     activeTab === '项目' ? "请输入项目名称/ID" :
                     activeTab === '广告' ? "请输入广告名称/ID" :
+                    activeTab === '创意' ? "请输入创意名称/ID" :
                     "请输入素材名称/ID"
                   }
                   className="bg-white border border-gray-200 rounded-md pl-4 pr-10 py-1.5 text-sm w-64 focus:outline-none focus:border-blue-500 transition-all placeholder:text-gray-300"
@@ -164,6 +174,7 @@ const App: React.FC = () => {
             {activeTab === '账户' && <AccountDataTable onDrillDown={(name) => handleDrillDown('账户', name)} />}
             {activeTab === '项目' && <ProjectDataTable onDrillDown={(name) => handleDrillDown('项目', name)} />}
             {activeTab === '广告' && <AdGroupDataTable onDrillDown={(name) => handleDrillDown('广告', name)} />}
+            {activeTab === '创意' && <CreativeDataTable onDrillDown={(name) => handleDrillDown('创意', name)} />}
             {activeTab === '素材' && <MaterialDataTable />}
           </>
         )}
