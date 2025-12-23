@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   Search, 
@@ -569,6 +568,16 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
     { rank: 8, name: "25122810-快手-二建-APP03-视频-口播-横版-20855", id: "87827381723878", spend: "15,680.60", impressions: "560,800", clicks: "620", ctr: "1.11%", reg: 380, cost: 41.26, regRate: '61.29%', score: 80.5, platforms: {douyin: 15, kuaishou: 75, baidu: 10} },
     { rank: 9, name: "25123012-百度-教资-APP01-视频-图文-横版-20888", id: "87827381723879", spend: "12,450.40", impressions: "450,200", clicks: "510", ctr: "1.13%", reg: 290, cost: 42.93, regRate: '56.86%', score: 79.0, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
     { rank: 10, name: "25123115-抖音S-会计-APP02-视频-情景剧-竖版-20901", id: "87827381723880", spend: "9,850.10", impressions: "320,100", clicks: "350", ctr: "1.09%", reg: 180, cost: 54.72, regRate: '51.43%', score: 77.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
+    { rank: 11, name: "25123220-快手-会计-APP01-视频-混剪-横版-20922", id: "87827381723881", spend: "9,120.50", impressions: "305,200", clicks: "310", ctr: "1.02%", reg: 160, cost: 57.00, regRate: '51.61%', score: 76.0, platforms: {douyin: 20, kuaishou: 70, baidu: 10} },
+    { rank: 12, name: "25123305-抖音S-公考-APP01-视频-口播-竖版-20935", id: "87827381723882", spend: "8,750.30", impressions: "298,500", clicks: "290", ctr: "0.97%", reg: 145, cost: 60.35, regRate: '50.00%', score: 75.5, platforms: {douyin: 80, kuaishou: 10, baidu: 10} },
+    { rank: 13, name: "25123418-百度-考研-APP02-视频-图文-横版-20948", id: "87827381723883", spend: "8,320.10", impressions: "285,100", clicks: "275", ctr: "0.96%", reg: 135, cost: 61.63, regRate: '49.09%', score: 74.0, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
+    { rank: 14, name: "25123512-抖音S-法考-APP01-视频-情景剧-竖版-20960", id: "87827381723884", spend: "7,890.60", impressions: "270,300", clicks: "260", ctr: "0.96%", reg: 125, cost: 63.12, regRate: '48.08%', score: 73.5, platforms: {douyin: 75, kuaishou: 20, baidu: 5} },
+    { rank: 15, name: "25123625-快手-医考-APP03-视频-真人口播-横版-20975", id: "87827381723885", spend: "7,450.20", impressions: "255,800", clicks: "245", ctr: "0.96%", reg: 115, cost: 64.78, regRate: '46.94%', score: 72.0, platforms: {douyin: 15, kuaishou: 80, baidu: 5} },
+    { rank: 16, name: "25123730-抖音S-雅思-APP01-视频-混剪-竖版-20988", id: "87827381723886", spend: "6,980.40", impressions: "240,500", clicks: "230", ctr: "0.96%", reg: 105, cost: 66.48, regRate: '45.65%', score: 71.5, platforms: {douyin: 85, kuaishou: 10, baidu: 5} },
+    { rank: 17, name: "25123805-百度-托福-APP02-视频-图文-横版-21001", id: "87827381723887", spend: "6,520.10", impressions: "225,200", clicks: "215", ctr: "0.95%", reg: 95, cost: 68.63, regRate: '44.19%', score: 70.0, platforms: {douyin: 5, kuaishou: 5, baidu: 90} },
+    { rank: 18, name: "25123915-快手-教资-APP01-视频-口播-竖版-21015", id: "87827381723888", spend: "6,150.30", impressions: "210,800", clicks: "200", ctr: "0.95%", reg: 85, cost: 72.36, regRate: '42.50%', score: 69.5, platforms: {douyin: 25, kuaishou: 70, baidu: 5} },
+    { rank: 19, name: "25124020-抖音S-一建-APP03-视频-情景剧-横版-21028", id: "87827381723889", spend: "5,820.50", impressions: "195,600", clicks: "185", ctr: "0.95%", reg: 75, cost: 77.61, regRate: '40.54%', score: 68.0, platforms: {douyin: 65, kuaishou: 30, baidu: 5} },
+    { rank: 20, name: "25124110-百度-二建-APP01-视频-真人口播-竖版-21042", id: "87827381723890", spend: "5,450.20", impressions: "180,400", clicks: "170", ctr: "0.94%", reg: 65, cost: 83.85, regRate: '38.24%', score: 67.5, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
   ];
 
   const displayedVideos = showAllVideos ? topVideos : topVideos.slice(0, 5);
@@ -648,7 +657,7 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <h3 className="font-semibold text-gray-800">爆款视频TOP10</h3>
+            <h3 className="font-semibold text-gray-800">爆款视频TOP20</h3>
             <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">数据处理规则为"按照素材名称相同的视频在不同平台同指标数据直接相加"</span>
           </div>
           <button 
@@ -672,7 +681,6 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                 <th className="px-4 py-4 font-medium text-right">注册数</th>
                 <th className="px-4 py-4 font-medium text-right">注册成本</th>
                 <th className="px-4 py-4 font-medium text-right">注册率</th>
-                <th className="px-4 py-4 font-medium text-right">综合得分</th>
                 <th className="px-6 py-4 font-medium">平台分布</th>
                 <th className="px-6 py-4 font-medium text-center">操作</th>
               </tr>
@@ -705,7 +713,6 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                   <td className="px-4 py-4 text-right text-gray-600">{item.reg}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.cost}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.regRate}</td>
-                  <td className="px-4 py-4 text-right text-gray-900 font-medium">{item.score}</td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1 text-[10px] text-gray-500 w-24">
                        {item.platforms.douyin > 0 && <div className="flex justify-between"><span>抖音</span><span>{item.platforms.douyin}%</span></div>}
@@ -737,7 +744,7 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                 </>
             ) : (
                 <>
-                    展开查看全部TOP10 <ChevronDown className="w-4 h-4" />
+                    展开查看全部TOP20 <ChevronDown className="w-4 h-4" />
                 </>
             )}
         </div>
