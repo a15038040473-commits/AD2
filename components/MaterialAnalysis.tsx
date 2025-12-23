@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Search, 
@@ -447,107 +448,98 @@ const AnalysisDrawer: React.FC<AnalysisDrawerProps> = ({ isOpen, onClose, materi
   );
 };
 
-const MaterialAIAnalysis = () => {
+const Top20MultiDimData = () => {
+  const [activeTab, setActiveTab] = useState<'year' | 'dept' | 'cat'>('year');
+
+  const yearData = [
+    { label: '23', count: 1, spend: 45737, reg: 564, cost: 81, spendRatio: '14%', regRatio: '8%' },
+    { label: '24', count: 4, spend: 143689, reg: 3218, cost: 45, spendRatio: '42%', regRatio: '43%' },
+    { label: '25', count: 5, spend: 149249, reg: 3618, cost: 41, spendRatio: '44%', regRatio: '49%' },
+    { label: '合计', count: 10, spend: 338675, reg: 7400, cost: 46, spendRatio: '100%', regRatio: '100%', isTotal: true },
+  ];
+
+  const deptData = [
+    { label: '直播', count: 3, spend: 101515, reg: 1801, cost: 56, spendRatio: '32%', regRatio: '27%' },
+    { label: '巨量', count: 2, spend: 87911, reg: 1981, cost: 44, spendRatio: '28%', regRatio: '29%' },
+    { label: '视频直播', count: 1, spend: 27295, reg: 626, cost: 44, spendRatio: '9%', regRatio: '9%' },
+    { label: '新媒体', count: 3, spend: 95915, reg: 2346, cost: 41, spendRatio: '31%', regRatio: '35%' },
+    { label: '合计', count: 9, spend: 312637, reg: 6754, cost: 46, spendRatio: '100%', regRatio: '100%', isTotal: true },
+  ];
+
+  const catData = [
+    { label: '口播', count: 7, spend: 242759, reg: 5054, cost: 48, spendRatio: '72%', regRatio: '68%' },
+    { label: '情景剧', count: 3, spend: 95915, reg: 2346, cost: 41, spendRatio: '28%', regRatio: '32%' },
+    { label: '合计', count: 10, spend: 338675, reg: 7400, cost: 46, spendRatio: '100%', regRatio: '100%', isTotal: true },
+  ];
+
+  const getCurrentData = () => {
+    switch(activeTab) {
+      case 'dept': return { data: deptData, header: '部门' };
+      case 'cat': return { data: catData, header: '类别' };
+      case 'year':
+      default: return { data: yearData, header: '年份' };
+    }
+  };
+
+  const { data, header } = getCurrentData();
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mb-8">
-        <h2 className="text-lg font-bold text-gray-900">素材AI分析</h2>
-        <span className="text-sm text-gray-500">上传视频，利用AI技术对即将投放的素材进行关键维度分析</span>
+      <h2 className="text-lg font-bold text-gray-900 mb-6">TOP20素材多维度数据</h2>
+      
+      <div className="flex gap-4 border-b border-gray-200 mb-6">
+         {/* Custom Tabs */}
+         <button 
+           onClick={() => setActiveTab('year')}
+           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'year' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+         >
+           年份
+         </button>
+         <button 
+           onClick={() => setActiveTab('dept')}
+           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'dept' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+         >
+           部门
+         </button>
+         <button 
+           onClick={() => setActiveTab('cat')}
+           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'cat' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+         >
+           类别
+         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Upload */}
-        <div className="lg:col-span-5 flex flex-col h-full">
-            <div className="bg-white rounded-xl border border-gray-100 p-6 flex-1 flex flex-col h-full">
-                <h3 className="font-semibold text-gray-900 mb-6">上传素材</h3>
-                
-                {/* Upload Area */}
-                <div className="flex-1 border-2 border-dashed border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center text-gray-400 hover:border-blue-400 hover:bg-blue-50/10 transition-colors cursor-pointer mb-6 min-h-[200px]">
-                    <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center mb-3">
-                         <UploadCloud className="w-8 h-8 text-blue-500" />
-                    </div>
-                    <span className="text-sm text-gray-500">点击上传素材文件</span>
-                </div>
-
-                {/* Input & Button */}
-                <div className="space-y-4 mt-auto">
-                    <input
-                        type="text"
-                        placeholder="输入标题文案（20字以内）"
-                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all bg-gray-50/30"
-                    />
-                    <button className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white py-3 rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2">
-                        开始AI评分
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        {/* Right Column: Analysis Results */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-            {/* Score and Metrics */}
-            <div className="bg-white rounded-xl border border-gray-100 p-8 flex flex-col md:flex-row gap-8 items-center">
-                {/* Big Score */}
-                <div className="flex flex-col items-center justify-center min-w-[150px]">
-                    <div className="text-6xl font-bold text-[#8B5CF6] mb-2 tracking-tighter">85</div>
-                    <div className="text-sm text-gray-500 font-medium">综合评分</div>
-                </div>
-
-                {/* Progress Bars */}
-                <div className="space-y-6 flex-1 w-full">
-                    {[
-                        { label: '文案质量', score: 92, color: 'bg-[#8B5CF6]' },
-                        { label: '视觉质量', score: 78, color: 'bg-[#A78BFA]' },
-                        { label: '创意新颖度', score: 75, color: 'bg-[#C4B5FD]' },
-                        { label: '历史预测', score: 88, color: 'bg-[#8B5CF6]' },
-                    ].map((item, index) => (
-                        <div key={index} className="flex items-center gap-4">
-                            <span className="text-sm text-gray-600 font-medium w-20">{item.label}</span>
-                            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div className={`h-full ${item.color} rounded-full transition-all duration-1000 ease-out`} style={{ width: `${item.score}%` }}></div>
-                            </div>
-                            <span className="text-sm font-bold text-gray-900 w-10 text-right">{item.score}分</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* AI Suggestions - Purple Card */}
-            <div className="bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-purple-200">
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Sparkles className="w-5 h-5 text-yellow-300" />
-                        <h3 className="font-bold text-lg tracking-wide">AI 智能建议</h3>
-                    </div>
-                    <p className="text-white/90 text-sm mb-5 leading-relaxed font-light">
-                        基于以上归因分析，我们为您生成了高价值的素材优化建议，预计可提升ROI 25-30%
-                    </p>
-                    <div className="space-y-3">
-                        {[
-                            '建议新素材采用"利益点+紧迫感+行动引导"结构',
-                            '标题控制在16-20字，包含"限时"+"立减"关键词',
-                            '视频时长30秒，开头3秒内出现真人老师'
-                        ].map((suggestion, idx) => (
-                            <div key={idx} className="flex items-start gap-3">
-                                <div className="mt-0.5 min-w-[20px]">
-                                    <div className="bg-[#4ADE80] rounded shadow-sm w-[20px] h-[20px] flex items-center justify-center">
-                                         <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
-                                    </div>
-                                </div>
-                                <span className="text-sm font-medium tracking-wide">{suggestion}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                {/* Decorative background elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none mix-blend-overlay"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl -ml-12 -mb-12 pointer-events-none mix-blend-overlay"></div>
-            </div>
-        </div>
+      <div className="overflow-hidden rounded-lg border border-gray-300">
+        <table className="w-full text-sm">
+          <thead className="bg-[#D4EADE] text-gray-900 font-semibold">
+             <tr>
+                <th className="px-6 py-3 border-r border-gray-300 text-center w-32">{header}</th>
+                <th className="px-6 py-3 border-r border-gray-300 text-center">数目</th>
+                <th className="px-6 py-3 border-r border-gray-300 text-center">消费</th>
+                <th className="px-6 py-3 border-r border-gray-300 text-center">注册数</th>
+                <th className="px-6 py-3 border-r border-gray-300 text-center">注册成本</th>
+                <th className="px-6 py-3 border-r border-gray-300 text-center">消费占比</th>
+                <th className="px-6 py-3 text-center">注册占比</th>
+             </tr>
+          </thead>
+          <tbody className="bg-[#EAF6ED]">
+             {data.map((row, idx) => (
+               <tr key={idx} className={`border-t border-gray-300 ${idx === data.length - 1 ? 'font-bold' : ''}`}>
+                  <td className="px-6 py-3 border-r border-gray-300 text-gray-900 text-center">{row.label}</td>
+                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.count}</td>
+                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.spend}</td>
+                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.reg}</td>
+                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.cost}</td>
+                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.spendRatio}</td>
+                  <td className="px-6 py-3 text-center text-gray-800">{row.regRatio}</td>
+               </tr>
+             ))}
+          </tbody>
+        </table>
       </div>
     </div>
-  );
-};
+  )
+}
 
 interface MaterialAnalysisProps {
   onNavigateToMaterials?: () => void;
@@ -750,8 +742,8 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
         </div>
       </div>
 
-      {/* New AI Analysis Module */}
-      <MaterialAIAnalysis />
+      {/* Top 20 Multi Dimension Data Table */}
+      <Top20MultiDimData />
     </div>
   );
 };
