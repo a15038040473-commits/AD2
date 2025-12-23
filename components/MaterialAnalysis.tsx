@@ -584,20 +584,17 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
 
       {/* Filters Bar */}
       <div className="flex flex-wrap items-center gap-3">
-        {['全部人员', '全部渠道', '全部平台', '全部平台'].map((label, i) => (
-          <div key={i} className="relative group">
-            <select className="appearance-none bg-white border border-gray-200 rounded px-4 py-2 pr-10 text-sm focus:outline-none focus:border-blue-500 min-w-[140px]">
-              <option>{label}</option>
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-hover:text-gray-600">
-              <ChevronRight className="w-4 h-4 rotate-90" />
-            </div>
-          </div>
-        ))}
-
         <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2 text-sm text-gray-600 hover:border-gray-300 cursor-pointer bg-white">
           <span>2023-10-01 至 2023-10-07</span>
           <Calendar className="w-4 h-4 text-gray-400" />
+        </div>
+
+        <div className="relative group">
+           <input 
+              type="text" 
+              placeholder="请输入素材名称"
+              className="bg-white border border-gray-200 rounded px-4 py-2 text-sm focus:outline-none focus:border-blue-500 min-w-[240px]"
+           />
         </div>
 
         <button className="bg-blue-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1.5 ml-auto md:ml-0">
@@ -665,7 +662,7 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
               <tr>
                 <th className="px-6 py-4 font-medium text-center w-16">排名</th>
                 <th className="px-6 py-4 font-medium w-24">素材预览</th>
-                <th className="px-6 py-4 font-medium">视频名称/ID</th>
+                <th className="px-6 py-4 font-medium">视频名称</th>
                 <th className="px-4 py-4 font-medium text-right">消耗(元)</th>
                 <th className="px-4 py-4 font-medium text-right">展现量</th>
                 <th className="px-4 py-4 font-medium text-right">点击量</th>
@@ -693,7 +690,6 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                         {item.name}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <span>ID: {item.id}</span>
                         {item.rank <= 3 && <span className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[10px]">优质素材</span>}
                       </div>
                     </div>
