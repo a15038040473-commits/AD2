@@ -21,7 +21,10 @@ import {
   Mic,
   Brain,
   FileText,
-  User
+  User,
+  Table as TableIcon,
+  BarChart2,
+  Plus
 } from 'lucide-react';
 
 const MetricCard = ({ title, value, hasDetail, tooltip }: { title: string, value: string, hasDetail?: boolean, tooltip?: string }) => (
@@ -448,9 +451,277 @@ const AnalysisDrawer: React.FC<AnalysisDrawerProps> = ({ isOpen, onClose, materi
   );
 };
 
-const Top20MultiDimData = () => {
-  const [activeTab, setActiveTab] = useState<'year' | 'dept' | 'cat'>('year');
+const BatchEditModal = ({ 
+  isOpen, 
+  onClose, 
+  data, 
+  onSave 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  data: any[]; 
+  onSave: (updatedData: any[]) => void; 
+}) => {
+  const [localData, setLocalData] = useState(data);
 
+  // Sync with prop when opened
+  useEffect(() => {
+    if (isOpen) {
+        setLocalData(JSON.parse(JSON.stringify(data)));
+    }
+  }, [isOpen, data]);
+
+  const handleInputChange = (id: string, field: string, value: string) => {
+    setLocalData(prev => prev.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const handleSave = () => {
+    onSave(localData);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity" 
+        onClick={onClose}
+      />
+      
+      {/* Modal Content */}
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-gray-100 bg-white">
+          <h3 className="font-bold text-gray-900 text-xl">批量添加字段</h3>
+        </div>
+
+        {/* Table Area */}
+        <div className="flex-1 overflow-auto p-6">
+             <table className="w-full text-sm text-left border border-gray-200">
+                <thead className="bg-gray-50 text-gray-700 font-medium">
+                    <tr>
+                        <th className="px-6 py-4 w-20 text-center border-b border-r border-gray-200">排名</th>
+                        <th className="px-6 py-4 w-[40%] border-b border-r border-gray-200">视频名称</th>
+                        <th className="px-6 py-4 w-[25%] text-center border-b border-r border-gray-200">导演</th>
+                        <th className="px-6 py-4 w-[25%] text-center border-b border-gray-200">演员</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                    {localData.map((row) => (
+                        <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 text-center border-r border-gray-200">{row.rank}</td>
+                            <td className="px-6 py-4 border-r border-gray-200">
+                                <div className="line-clamp-2" title={row.name}>{row.name}</div>
+                            </td>
+                            <td className="px-6 py-4 border-r border-gray-200">
+                                <input 
+                                    type="text" 
+                                    value={row.director || ''}
+                                    placeholder={row.rank === 1 ? "王家卫" : "请输入导演"}
+                                    onChange={(e) => handleInputChange(row.id, 'director', e.target.value)}
+                                    className="w-full text-center bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none py-1 transition-colors placeholder:text-gray-400"
+                                />
+                            </td>
+                            <td className="px-6 py-4">
+                                <input 
+                                    type="text" 
+                                    value={row.actor || ''}
+                                    placeholder={row.rank === 1 ? "巩俐/章子怡" : "请输入演员"}
+                                    onChange={(e) => handleInputChange(row.id, 'actor', e.target.value)}
+                                    className="w-full text-center bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none py-1 transition-colors placeholder:text-gray-400"
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+             </table>
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="px-6 py-5 border-t border-gray-100 flex items-center justify-center gap-4 bg-white">
+            <button 
+                onClick={onClose}
+                className="w-32 py-2.5 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+                取消
+            </button>
+            <button 
+                onClick={handleSave}
+                className="w-32 py-2.5 rounded bg-white border border-gray-400 text-gray-900 hover:bg-gray-50 transition-colors font-medium"
+            >
+                确定
+            </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SyncDetailsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  if (!isOpen) return null;
+
+  const records = [
+    { time: '18:00:15', platform: '抖音', material: '视频广告', count: '156条', status: '成功', duration: '2.3s' },
+    { time: '17:55:20', platform: '快手', material: '视频广告', count: '89条', status: '成功', duration: '1.8s' },
+    { time: '17:50:10', platform: '百度搜索', material: '视频广告', count: '45条', status: '成功', duration: '1.2s' },
+    { time: '17:45:05', platform: '百度信息流', material: '视频广告', count: '23条', status: '成功', duration: '0.9s' },
+    { time: '17:30:00', platform: '腾讯', material: '视频广告', count: '12条', status: '超时', duration: '5.1s' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity" 
+        onClick={onClose}
+      />
+      
+      {/* Modal Content */}
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+          <h3 className="font-bold text-gray-900 text-lg">数据同步记录</h3>
+          <div className="flex items-center gap-3">
+             <div className="relative">
+                <select className="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-md pl-3 pr-8 py-1.5 focus:outline-none focus:border-blue-500 hover:border-gray-300 transition-colors cursor-pointer">
+                    <option>全部平台</option>
+                    <option>抖音</option>
+                    <option>快手</option>
+                    <option>百度搜索</option>
+                    <option>百度信息流</option>
+                    <option>腾讯</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <ChevronDown className="w-3.5 h-3.5" />
+                </div>
+             </div>
+             <button 
+                onClick={onClose}
+                className="p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+             >
+                <X className="w-5 h-5" />
+             </button>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="p-0">
+             <table className="w-full text-sm text-left">
+                <thead className="bg-gray-50 text-gray-600 font-medium">
+                    <tr>
+                        <th className="px-6 py-4 w-32">时间</th>
+                        <th className="px-6 py-4 w-32">平台</th>
+                        <th className="px-6 py-4 w-40">同步素材</th>
+                        <th className="px-6 py-4 w-32 text-blue-600 font-semibold">同步数量</th>
+                        <th className="px-6 py-4 w-24">状态</th>
+                        <th className="px-6 py-4 text-right">耗时</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                    {records.map((row, idx) => (
+                        <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-6 py-4 text-gray-900">{row.time}</td>
+                            <td className="px-6 py-4 font-medium text-gray-900">{row.platform}</td>
+                            <td className="px-6 py-4 text-gray-600">{row.material}</td>
+                            <td className="px-6 py-4 text-blue-600 font-medium">{row.count}</td>
+                            <td className="px-6 py-4">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
+                                    row.status === '成功' 
+                                        ? 'bg-green-50 text-green-700 border border-green-100' 
+                                        : 'bg-orange-50 text-orange-700 border border-orange-100'
+                                }`}>
+                                    {row.status}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4 text-right text-gray-500">{row.duration}</td>
+                        </tr>
+                    ))}
+                </tbody>
+             </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const DimensionTable = ({ title, data, headerContent }: { title: string, data: any[], headerContent?: React.ReactNode }) => (
+  <div className="overflow-hidden rounded-lg border border-gray-300 relative h-full">
+    {headerContent && (
+      <div className="absolute top-2.5 right-3 z-10">
+        {headerContent}
+      </div>
+    )}
+    <table className="w-full text-sm h-full">
+      <thead className="bg-[#D4EADE] text-gray-900 font-semibold sticky top-0 z-0">
+          <tr>
+            <th className="px-3 py-3 border-r border-gray-300 text-center w-24 h-[46px] align-middle">{title}</th>
+            <th className="px-3 py-3 border-r border-gray-300 text-center align-middle">数目</th>
+            <th className="px-3 py-3 border-r border-gray-300 text-center align-middle">消费</th>
+            <th className="px-3 py-3 border-r border-gray-300 text-center align-middle">注册数</th>
+            <th className="px-3 py-3 border-r border-gray-300 text-center align-middle">注册成本</th>
+            <th className="px-3 py-3 border-r border-gray-300 text-center align-middle">消费占比</th>
+            <th className="px-3 py-3 text-center align-middle">注册占比</th>
+          </tr>
+      </thead>
+      <tbody className="bg-[#EAF6ED]">
+          {data.map((row, idx) => (
+            <tr key={idx} className={`border-t border-gray-300 ${row.isTotal ? 'font-bold' : ''}`}>
+              <td className="px-3 py-3 border-r border-gray-300 text-gray-900 text-center">{row.label}</td>
+              <td className="px-3 py-3 border-r border-gray-300 text-center text-gray-800">{row.count}</td>
+              <td className="px-3 py-3 border-r border-gray-300 text-center text-gray-800">{row.spend.toLocaleString()}</td>
+              <td className="px-3 py-3 border-r border-gray-300 text-center text-gray-800">{row.reg}</td>
+              <td className="px-3 py-3 border-r border-gray-300 text-center text-gray-800">{row.cost}</td>
+              <td className="px-3 py-3 border-r border-gray-300 text-center text-gray-800">{row.spendRatio}</td>
+              <td className="px-3 py-3 text-center text-gray-800">{row.regRatio}</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const ActorChart = ({ data }: { data: any[] }) => {
+  return (
+    <div className="h-full bg-[#EAF6ED] p-6 overflow-y-auto">
+       <div className="flex items-center justify-end gap-4 mb-4">
+          <div className="flex items-center gap-1.5">
+             <div className="w-3 h-3 bg-blue-600 rounded-[2px]"></div>
+             <span className="text-xs text-gray-600">消费占比</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+             <div className="w-3 h-3 bg-green-600 rounded-[2px]"></div>
+             <span className="text-xs text-gray-600">注册占比</span>
+          </div>
+       </div>
+       <div className="space-y-6">
+          {data.map((item, idx) => (
+             <div key={idx}>
+                <div className="flex justify-between items-end mb-1.5">
+                   <span className="text-sm font-medium text-gray-800">{item.label}</span>
+                </div>
+                <div className="space-y-1.5">
+                   <div className="relative h-2.5 bg-gray-200/50 rounded-full overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500" style={{ width: item.spendRatio }}></div>
+                   </div>
+                   <div className="relative h-2.5 bg-gray-200/50 rounded-full overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full bg-green-600 rounded-full transition-all duration-500" style={{ width: item.regRatio }}></div>
+                   </div>
+                </div>
+                <div className="flex justify-between mt-1 text-[10px] text-gray-500 px-0.5">
+                   <span>消费 {item.spendRatio}</span>
+                   <span>注册 {item.regRatio}</span>
+                </div>
+             </div>
+          ))}
+       </div>
+    </div>
+  )
+}
+
+const Top20MultiDimData = () => {
   const yearData = [
     { label: '23', count: 1, spend: 45737, reg: 564, cost: 81, spendRatio: '14%', regRatio: '8%' },
     { label: '24', count: 4, spend: 143689, reg: 3218, cost: 45, spendRatio: '42%', regRatio: '43%' },
@@ -472,73 +743,68 @@ const Top20MultiDimData = () => {
     { label: '合计', count: 10, spend: 338675, reg: 7400, cost: 46, spendRatio: '100%', regRatio: '100%', isTotal: true },
   ];
 
-  const getCurrentData = () => {
-    switch(activeTab) {
-      case 'dept': return { data: deptData, header: '部门' };
-      case 'cat': return { data: catData, header: '类别' };
-      case 'year':
-      default: return { data: yearData, header: '年份' };
-    }
-  };
+  const directorData = [
+    { label: '王家卫', count: 2, spend: 101602, reg: 2220, cost: 46, spendRatio: '30%', regRatio: '30%' },
+    { label: '陈凯歌', count: 2, spend: 67735, reg: 1480, cost: 46, spendRatio: '20%', regRatio: '20%' },
+    { label: '张艺谋', count: 2, spend: 67735, reg: 1480, cost: 46, spendRatio: '20%', regRatio: '20%' },
+    { label: '冯小刚', count: 2, spend: 50801, reg: 1110, cost: 46, spendRatio: '15%', regRatio: '15%' },
+    { label: '姜文', count: 2, spend: 50801, reg: 1110, cost: 46, spendRatio: '15%', regRatio: '15%' },
+    { label: '合计', count: 10, spend: 338675, reg: 7400, cost: 46, spendRatio: '100%', regRatio: '100%', isTotal: true },
+  ];
 
-  const { data, header } = getCurrentData();
+  const actorData = [
+    { label: '韦亚廷', count: 3, spend: 89347, reg: 2113, cost: 42, spendRatio: '44%', regRatio: '44%' },
+    { label: '齐双艳', count: 1, spend: 33863, reg: 859, cost: 39, spendRatio: '17%', regRatio: '18%' },
+    { label: '景佳妮', count: 1, spend: 28446, reg: 865, cost: 33, spendRatio: '14%', regRatio: '18%' },
+    { label: '孙树莹', count: 1, spend: 27332, reg: 372, cost: 73, spendRatio: '13%', regRatio: '8%' },
+    { label: '数字人', count: 1, spend: 26038, reg: 646, cost: 40, spendRatio: '13%', regRatio: '13%' },
+    { label: '合计', count: 7, spend: 205026, reg: 4855, cost: 42, spendRatio: '100%', regRatio: '100%', isTotal: true },
+  ];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-6">TOP20素材多维度数据</h2>
-      
-      <div className="flex gap-4 border-b border-gray-200 mb-6">
-         {/* Custom Tabs */}
-         <button 
-           onClick={() => setActiveTab('year')}
-           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'year' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-         >
-           年份
-         </button>
-         <button 
-           onClick={() => setActiveTab('dept')}
-           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'dept' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-         >
-           部门
-         </button>
-         <button 
-           onClick={() => setActiveTab('cat')}
-           className={`pb-3 px-2 text-sm font-medium transition-all relative ${activeTab === 'cat' ? 'text-blue-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-         >
-           类别
-         </button>
-      </div>
-
-      <div className="overflow-hidden rounded-lg border border-gray-300">
-        <table className="w-full text-sm">
-          <thead className="bg-[#D4EADE] text-gray-900 font-semibold">
-             <tr>
-                <th className="px-6 py-3 border-r border-gray-300 text-center w-32">{header}</th>
-                <th className="px-6 py-3 border-r border-gray-300 text-center">数目</th>
-                <th className="px-6 py-3 border-r border-gray-300 text-center">消费</th>
-                <th className="px-6 py-3 border-r border-gray-300 text-center">注册数</th>
-                <th className="px-6 py-3 border-r border-gray-300 text-center">注册成本</th>
-                <th className="px-6 py-3 border-r border-gray-300 text-center">消费占比</th>
-                <th className="px-6 py-3 text-center">注册占比</th>
-             </tr>
-          </thead>
-          <tbody className="bg-[#EAF6ED]">
-             {data.map((row, idx) => (
-               <tr key={idx} className={`border-t border-gray-300 ${idx === data.length - 1 ? 'font-bold' : ''}`}>
-                  <td className="px-6 py-3 border-r border-gray-300 text-gray-900 text-center">{row.label}</td>
-                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.count}</td>
-                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.spend}</td>
-                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.reg}</td>
-                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.cost}</td>
-                  <td className="px-6 py-3 border-r border-gray-300 text-center text-gray-800">{row.spendRatio}</td>
-                  <td className="px-6 py-3 text-center text-gray-800">{row.regRatio}</td>
-               </tr>
-             ))}
-          </tbody>
-        </table>
+      <h2 className="text-lg font-bold text-gray-900 mb-6">TOP20素材分维度统计</h2>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <DimensionTable title="年份" data={yearData} />
+        <DimensionTable title="部门" data={deptData} />
+        <DimensionTable title="类别" data={catData} />
+        <DimensionTable title="导演" data={directorData} />
+        
+        {/* Actor Row */}
+        <DimensionTable title="演员" data={actorData} />
+        
+        <div className="overflow-hidden rounded-lg border border-gray-300 relative h-full flex flex-col bg-[#EAF6ED]">
+            <div className="bg-[#D4EADE] text-gray-900 font-semibold px-3 py-3 border-b border-gray-300 h-[46px] flex items-center justify-center">
+                演员数据占比
+            </div>
+            <div className="flex-1">
+                <ActorChart data={actorData.filter(d => !d.isTotal)} />
+            </div>
+        </div>
       </div>
     </div>
   )
+}
+
+interface TopVideo {
+  rank: number;
+  name: string;
+  id: string;
+  spend: string;
+  impressions: string;
+  clicks: string;
+  ctr: string;
+  reg: number;
+  cost: number;
+  regRate: string;
+  score: number;
+  platforms: {
+    douyin: number;
+    kuaishou: number;
+    baidu: number;
+  };
+  director?: string;
+  actor?: string;
 }
 
 interface MaterialAnalysisProps {
@@ -548,8 +814,11 @@ interface MaterialAnalysisProps {
 export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateToMaterials }) => {
   const [showAllVideos, setShowAllVideos] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
+  const [isBatchEditOpen, setIsBatchEditOpen] = useState(false);
+  const [showExtraColumns, setShowExtraColumns] = useState(false);
 
-  const topVideos = [
+  const initialTopVideos: TopVideo[] = [
     { rank: 1, name: "25120206-抖音S-校企-APP01-视频-情景剧多人-竖版-20753", id: "87827381723871", spend: "58,824.06", impressions: "3,394,601", clicks: "3,190", ctr: "0.95%", reg: 1596, cost: 36.86, regRate: '50.03%', score: 92.5, platforms: {douyin: 51, kuaishou: 39, baidu: 10} },
     { rank: 2, name: "25120901-抖音S-校企-APP01-视频-情景剧多人-横版-20754", id: "87827381723872", spend: "42,156.80", impressions: "2,156,780", clicks: "2,845", ctr: "1.12%", reg: 1420, cost: 29.69, regRate: '49.91%', score: 90.5, platforms: {douyin: 60, kuaishou: 30, baidu: 10} },
     { rank: 3, name: "25120903-抖音S-校企-APP01-视频-真人口播单人-横版-20755", id: "87827381723873", spend: "31,832.09", impressions: "1,531,899", clicks: "1,764", ctr: "1.25%", reg: 856, cost: 37.19, regRate: '48.53%', score: 88.0, platforms: {douyin: 45, kuaishou: 45, baidu: 10} },
@@ -572,7 +841,15 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
     { rank: 20, name: "25124110-百度-二建-APP01-视频-真人口播-竖版-21042", id: "87827381723890", spend: "5,450.20", impressions: "180,400", clicks: "170", ctr: "0.94%", reg: 65, cost: 83.85, regRate: '38.24%', score: 67.5, platforms: {douyin: 10, kuaishou: 10, baidu: 80} },
   ];
 
+  const [topVideos, setTopVideos] = useState<TopVideo[]>(initialTopVideos);
+
   const displayedVideos = showAllVideos ? topVideos : topVideos.slice(0, 5);
+
+  const handleSaveBatchEdit = (updatedVideos: any[]) => {
+    setTopVideos(updatedVideos);
+    setShowExtraColumns(true);
+    setIsBatchEditOpen(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -580,6 +857,18 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
         isOpen={!!selectedVideo} 
         onClose={() => setSelectedVideo(null)} 
         materialName={selectedVideo ? topVideos.find(v => v.id === selectedVideo)?.name : ''}
+      />
+      
+      <SyncDetailsModal 
+        isOpen={isSyncModalOpen} 
+        onClose={() => setIsSyncModalOpen(false)} 
+      />
+
+      <BatchEditModal 
+        isOpen={isBatchEditOpen}
+        onClose={() => setIsBatchEditOpen(false)}
+        data={topVideos}
+        onSave={handleSaveBatchEdit}
       />
 
       {/* Filters Bar */}
@@ -631,14 +920,15 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
             <span className="text-blue-600 font-medium">今日同步视频素材</span>
             <span className="text-blue-700 font-bold text-lg">98</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-blue-600 font-medium">今日同步图片素材</span>
-            <span className="text-blue-700 font-bold text-lg">76</span>
-          </div>
         </div>
         <div className="flex items-center gap-6 text-gray-500 mt-2 sm:mt-0">
           <span>同步时间 2024-01-15 18:00:15</span>
-          <a href="#" className="text-blue-600 hover:text-blue-700 hover:underline">查看同步详情</a>
+          <button 
+            onClick={() => setIsSyncModalOpen(true)}
+            className="text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            查看同步详情
+          </button>
         </div>
       </div>
 
@@ -649,12 +939,21 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
             <h3 className="font-semibold text-gray-800">爆款视频TOP20</h3>
             <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">数据处理规则为"按照素材名称相同的视频在不同平台同指标数据直接相加"</span>
           </div>
-          <button 
-            onClick={onNavigateToMaterials}
-            className="text-sm bg-[#0EA5E9] text-white px-4 py-1.5 rounded hover:bg-[#0284c7] transition-colors"
-          >
-            全部素材
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+                onClick={() => setIsBatchEditOpen(true)}
+                className="text-sm bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5"
+            >
+                <Plus className="w-4 h-4" />
+                批量添加字段
+            </button>
+            <button 
+                onClick={onNavigateToMaterials}
+                className="text-sm bg-[#0EA5E9] text-white px-4 py-1.5 rounded hover:bg-[#0284c7] transition-colors"
+            >
+                全部素材
+            </button>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -670,6 +969,8 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                 <th className="px-4 py-4 font-medium text-right">注册数</th>
                 <th className="px-4 py-4 font-medium text-right">注册成本</th>
                 <th className="px-4 py-4 font-medium text-right">注册率</th>
+                {showExtraColumns && <th className="px-4 py-4 font-medium text-center bg-yellow-50/50 text-yellow-800 border-l border-yellow-100">导演</th>}
+                {showExtraColumns && <th className="px-4 py-4 font-medium text-center bg-yellow-50/50 text-yellow-800">演员</th>}
                 <th className="px-6 py-4 font-medium">平台分布</th>
                 <th className="px-6 py-4 font-medium text-center">操作</th>
               </tr>
@@ -701,6 +1002,16 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                   <td className="px-4 py-4 text-right text-gray-600">{item.reg}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.cost}</td>
                   <td className="px-4 py-4 text-right text-gray-600">{item.regRate}</td>
+                  {showExtraColumns && (
+                    <td className="px-4 py-4 text-center text-gray-700 bg-yellow-50/20 border-l border-yellow-100">
+                        {item.director || '-'}
+                    </td>
+                  )}
+                  {showExtraColumns && (
+                    <td className="px-4 py-4 text-center text-gray-700 bg-yellow-50/20">
+                        {item.actor || '-'}
+                    </td>
+                  )}
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1 text-[10px] text-gray-500 w-24">
                        {item.platforms.douyin > 0 && <div className="flex justify-between"><span>抖音</span><span>{item.platforms.douyin}%</span></div>}
