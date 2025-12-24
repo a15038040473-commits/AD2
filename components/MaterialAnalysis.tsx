@@ -721,6 +721,66 @@ const ActorChart = ({ data }: { data: any[] }) => {
   )
 }
 
+const CreativePieChart = ({ data }: { data: { label: string; value: number; color: string }[] }) => {
+  let cumulativePercent = 0;
+
+  function getCoordinatesForPercent(percent: number) {
+    const x = Math.cos(2 * Math.PI * percent);
+    const y = Math.sin(2 * Math.PI * percent);
+    return [x, y];
+  }
+
+  return (
+    <div className="flex flex-row items-center justify-center gap-8 h-full">
+      <div className="w-32 h-32 relative">
+        <svg viewBox="-1.2 -1.2 2.4 2.4" style={{ transform: 'rotate(-90deg)' }} className="w-full h-full">
+          {data.map((slice, index) => {
+            const start = cumulativePercent;
+            const slicePercent = slice.value / 100;
+            const end = cumulativePercent + slicePercent;
+            cumulativePercent = end;
+
+            if (slicePercent === 1) {
+                return <circle key={index} cx="0" cy="0" r="1" fill={slice.color} />;
+            }
+
+            const [startX, startY] = getCoordinatesForPercent(start);
+            const [endX, endY] = getCoordinatesForPercent(end);
+
+            const largeArcFlag = slicePercent > 0.5 ? 1 : 0;
+
+            const pathData = [
+              `M 0 0`,
+              `L ${startX} ${startY}`,
+              `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+              `Z`
+            ].join(' ');
+
+            return (
+              <path
+                key={index}
+                d={pathData}
+                fill={slice.color}
+                stroke="white"
+                strokeWidth="0.05"
+              />
+            );
+          })}
+        </svg>
+      </div>
+      <div className="flex flex-col gap-3">
+        {data.map((item, idx) => (
+           <div key={idx} className="flex items-center gap-2 text-sm">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+              <span className="text-gray-600">{item.label}</span>
+              <span className="font-semibold text-gray-900">{item.value}%</span>
+           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const Top20MultiDimData = () => {
   const yearData = [
     { label: '23', count: 1, spend: 45737, reg: 564, cost: 81, spendRatio: '14%', regRatio: '8%' },
@@ -761,6 +821,12 @@ const Top20MultiDimData = () => {
     { label: '合计', count: 7, spend: 205026, reg: 4855, cost: 42, spendRatio: '100%', regRatio: '100%', isTotal: true },
   ];
 
+  const creativePieData = [
+    { label: '口播', value: 45, color: '#3B82F6' },
+    { label: '情景剧', value: 35, color: '#10B981' },
+    { label: '混剪', value: 20, color: '#F59E0B' }
+  ];
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-6">TOP20素材分维度统计</h2>
@@ -779,6 +845,16 @@ const Top20MultiDimData = () => {
             </div>
             <div className="flex-1">
                 <ActorChart data={actorData.filter(d => !d.isTotal)} />
+            </div>
+        </div>
+
+        {/* New Creative Pie Chart */}
+        <div className="overflow-hidden rounded-lg border border-gray-300 relative h-full flex flex-col bg-[#EAF6ED]">
+             <div className="bg-[#D4EADE] text-gray-900 font-semibold px-3 py-3 border-b border-gray-300 h-[46px] flex items-center justify-center">
+                素材创意的占比
+            </div>
+            <div className="flex-1 p-6">
+                <CreativePieChart data={creativePieData} />
             </div>
         </div>
       </div>
@@ -813,6 +889,7 @@ interface MaterialAnalysisProps {
 
 export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateToMaterials }) => {
   const [showAllVideos, setShowAllVideos] = useState(false);
+  const [activeTopTab, setActiveTopTab] = useState<'video' | 'image'>('video');
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isBatchEditOpen, setIsBatchEditOpen] = useState(false);
@@ -873,11 +950,34 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
 
       {/* Filters Bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2 text-sm text-gray-600 hover:border-gray-300 cursor-pointer bg-white">
-          <span>2023-10-01 至 2023-10-07</span>
-          <Calendar className="w-4 h-4 text-gray-400" />
+        {/* Channel Dropdown */}
+        <div className="relative">
+            <select className="appearance-none bg-white border border-gray-200 rounded px-4 py-2 pr-10 text-sm focus:outline-none focus:border-blue-500 min-w-[140px] cursor-pointer hover:border-gray-300">
+                <option>全部渠道</option>
+                <option>巨量引擎</option>
+                <option>腾讯广告</option>
+                <option>百度营销</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown className="w-4 h-4" />
+            </div>
         </div>
 
+        {/* Platform Dropdown */}
+        <div className="relative">
+            <select className="appearance-none bg-white border border-gray-200 rounded px-4 py-2 pr-10 text-sm focus:outline-none focus:border-blue-500 min-w-[140px] cursor-pointer hover:border-gray-300">
+                <option>全部平台</option>
+                <option>抖音</option>
+                <option>快手</option>
+                <option>百度</option>
+                <option>微信</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown className="w-4 h-4" />
+            </div>
+        </div>
+
+        {/* Search Input */}
         <div className="relative group">
            <input 
               type="text" 
@@ -886,7 +986,14 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
            />
         </div>
 
-        <button className="bg-blue-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1.5 ml-auto md:ml-0">
+        {/* Date Picker - Moved here */}
+        <div className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2 text-sm text-gray-600 hover:border-gray-300 cursor-pointer bg-white ml-auto md:ml-0">
+          <span>2023-10-01 至 2023-10-07</span>
+          <Calendar className="w-4 h-4 text-gray-400" />
+        </div>
+
+        {/* Buttons */}
+        <button className="bg-blue-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-1.5">
           <Search className="w-4 h-4" />
           查询
         </button>
@@ -902,14 +1009,13 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
           <h2 className="text-base font-semibold text-gray-800">核心指标</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard title="消耗(元)" value="128,560.80" tooltip="Total Spend" />
-          <MetricCard title="展示数(次)" value="128,560" tooltip="Impressions" />
-          <MetricCard title="点击数(次)" value="128,560" tooltip="Clicks" />
-          <MetricCard title="点击率(%)" value="4.13%" tooltip="CTR" />
-          <MetricCard title="线索量(条)" value="8,560" hasDetail tooltip="Leads" />
-          <MetricCard title="订单量(单)" value="6,080" hasDetail tooltip="Orders" />
-          <MetricCard title="销售额(元)" value="879,500,000.00" tooltip="Revenue" />
-          <MetricCard title="平均千次展现费用(元)" value="8,560" tooltip="CPM" />
+          <MetricCard title="花费(元)" value="15,080.88" tooltip="Total Spend" />
+          <MetricCard title="展现量(次)" value="1,238,308" tooltip="Impressions" />
+          <MetricCard title="点击量(次)" value="33,270" tooltip="Clicks" />
+          <MetricCard title="点击率" value="2.68%" tooltip="CTR" />
+          <MetricCard title="注册量(个)" value="385" tooltip="Registrations" />
+          <MetricCard title="注册成本(元)" value="39.17" tooltip="Cost Per Registration" />
+          <MetricCard title="注册率" value="1.16%" tooltip="Registration Rate" />
         </div>
       </div>
 
@@ -934,19 +1040,42 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
 
       {/* Top Materials Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <h3 className="font-semibold text-gray-800">爆款视频TOP20</h3>
-            <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">数据处理规则为"按照素材名称相同的视频在不同平台同指标数据直接相加"</span>
+        <div className="px-6 py-0 border-b border-gray-100 flex justify-between items-center h-14">
+          <div className="flex items-center gap-6 h-full">
+            <div className="flex h-full">
+                <button 
+                    onClick={() => setActiveTopTab('video')}
+                    className={`px-2 h-full border-b-2 font-semibold text-sm transition-colors flex items-center ${
+                        activeTopTab === 'video' 
+                        ? 'border-blue-600 text-blue-600' 
+                        : 'border-transparent text-gray-600 hover:text-gray-900'
+                    }`}
+                >
+                    爆款视频TOP20
+                </button>
+                <button 
+                    onClick={() => setActiveTopTab('image')}
+                    className={`px-2 h-full border-b-2 font-semibold text-sm transition-colors flex items-center ml-4 ${
+                        activeTopTab === 'image' 
+                        ? 'border-blue-600 text-blue-600' 
+                        : 'border-transparent text-gray-600 hover:text-gray-900'
+                    }`}
+                >
+                    爆款图文TOP20
+                </button>
+            </div>
+            <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">数据处理规则为"按照素材名称相同的{activeTopTab === 'video' ? '视频' : '图文'}在不同平台同指标数据直接相加"</span>
           </div>
           <div className="flex items-center gap-3">
-            <button 
-                onClick={() => setIsBatchEditOpen(true)}
-                className="text-sm bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5"
-            >
-                <Plus className="w-4 h-4" />
-                批量添加字段
-            </button>
+            {activeTopTab === 'video' && (
+              <button 
+                  onClick={() => setIsBatchEditOpen(true)}
+                  className="text-sm bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded hover:bg-gray-50 transition-colors flex items-center gap-1.5"
+              >
+                  <Plus className="w-4 h-4" />
+                  批量添加字段
+              </button>
+            )}
             <button 
                 onClick={onNavigateToMaterials}
                 className="text-sm bg-[#0EA5E9] text-white px-4 py-1.5 rounded hover:bg-[#0284c7] transition-colors"
@@ -961,7 +1090,7 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
               <tr>
                 <th className="px-6 py-4 font-medium text-center w-16">排名</th>
                 <th className="px-6 py-4 font-medium w-24">素材预览</th>
-                <th className="px-6 py-4 font-medium">视频名称</th>
+                <th className="px-6 py-4 font-medium">{activeTopTab === 'video' ? '视频' : '图文'}名称</th>
                 <th className="px-4 py-4 font-medium text-right">消耗(元)</th>
                 <th className="px-4 py-4 font-medium text-right">展现量</th>
                 <th className="px-4 py-4 font-medium text-right">点击量</th>
@@ -1043,7 +1172,7 @@ export const MaterialAnalysis: React.FC<MaterialAnalysisProps> = ({ onNavigateTo
                 </>
             ) : (
                 <>
-                    展开查看全部TOP20 <ChevronDown className="w-4 h-4" />
+                    展开查看全部{activeTopTab === 'video' ? '视频' : '图文'}TOP20 <ChevronDown className="w-4 h-4" />
                 </>
             )}
         </div>

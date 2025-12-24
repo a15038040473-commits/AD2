@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronsUpDown, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronsUpDown, ChevronLeft, ChevronRight, MoreHorizontal, Filter } from 'lucide-react';
 
 interface AdGroupRow {
   id: string;
@@ -116,6 +116,11 @@ export const AdGroupDataTable: React.FC<AdGroupDataTableProps> = ({ onDrillDown 
     }
   ];
 
+  const getStatus = (spend: string) => {
+    const value = parseFloat(spend.replace(/,/g, ''));
+    return value > 0 ? 'active' : 'inactive';
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
       <div className="flex items-center justify-between mb-6">
@@ -140,6 +145,12 @@ export const AdGroupDataTable: React.FC<AdGroupDataTableProps> = ({ onDrillDown 
               </th>
               <th className="p-4 min-w-[140px] border-r border-gray-200">广告ID</th>
               <th className="p-4 min-w-[180px] border-r border-gray-200">广告名称</th>
+              <th className="p-4 min-w-[120px] border-r border-gray-200">
+                <div className="flex items-center gap-1 cursor-pointer hover:text-gray-900 group">
+                  <span>状态</span>
+                  <Filter className="w-3 h-3 text-gray-400 group-hover:text-gray-600" />
+                </div>
+              </th>
               <th className="p-4 min-w-[180px] border-r border-gray-200">所属项目</th>
               <th className="p-4 text-right bg-gray-50 border-r border-gray-200"><SortHeader label="花费(元)" /></th>
               <th className="p-4 text-right bg-gray-50 border-r border-gray-200"><SortHeader label="展现量" /></th>
@@ -161,6 +172,7 @@ export const AdGroupDataTable: React.FC<AdGroupDataTableProps> = ({ onDrillDown 
                   <>
                     <td className="p-4 border-r border-gray-100"></td>
                     <td className="p-4 font-medium text-gray-900 border-r border-gray-100">合计</td>
+                    <td className="p-4 border-r border-gray-100">-</td>
                     <td className="p-4 text-gray-500 border-r border-gray-100">{row.project}</td>
                   </>
                 ) : (
@@ -174,6 +186,14 @@ export const AdGroupDataTable: React.FC<AdGroupDataTableProps> = ({ onDrillDown 
                       >
                         {row.name}
                       </a>
+                    </td>
+                    <td className="p-4 border-r border-gray-100">
+                      <div className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${getStatus(row.spend) === 'active' ? 'bg-green-500' : 'bg-gray-300'}`} />
+                        <span className={getStatus(row.spend) === 'active' ? 'text-green-700' : 'text-gray-500'}>
+                          {getStatus(row.spend) === 'active' ? '投放中' : '未投放'}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-4 text-gray-500 border-r border-gray-100">{row.project}</td>
                   </>
