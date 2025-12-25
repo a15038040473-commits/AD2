@@ -7,6 +7,7 @@ import { ProjectDataTable } from './components/ProjectDataTable';
 import { AdGroupDataTable } from './components/AdGroupDataTable';
 import { CreativeDataTable } from './components/CreativeDataTable';
 import { MaterialAnalysis } from './components/MaterialAnalysis';
+import { PromotionDashboard } from './components/PromotionDashboard';
 import MaterialDataTable from './components/MaterialDataTable';
 import { Search, Calendar, HelpCircle, ChevronRight } from 'lucide-react';
 
@@ -34,20 +35,29 @@ const App: React.FC = () => {
       <Sidebar activeItem={activePage} onNavigate={setActivePage} />
       
       <main className="flex-1 overflow-y-auto bg-white p-6 custom-scrollbar">
-        {/* Header section */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-semibold text-gray-900">{activePage}</h1>
-          <div className="text-xs text-gray-400">最后更新：2024-11-11 14:30</div>
-        </div>
-
-        {activePage === '素材分析看板' ? (
-          <MaterialAnalysis onNavigateToMaterials={() => {
-            setActivePage('广告投放看板');
-            setActiveTab('素材');
-          }} />
+        {activePage === '推广看板' ? (
+          <PromotionDashboard />
+        ) : activePage === '素材分析看板' ? (
+          <>
+            {/* Header section for Material Analysis */}
+            <div className="flex justify-between items-center mb-6">
+               <h1 className="text-xl font-semibold text-gray-900">{activePage}</h1>
+               <div className="text-xs text-gray-400">最后更新：2024-11-11 14:30</div>
+            </div>
+            <MaterialAnalysis onNavigateToMaterials={() => {
+              setActivePage('广告投放看板');
+              setActiveTab('素材');
+            }} />
+          </>
         ) : (
           /* Default/Ad Delivery Dashboard View */
           <>
+            {/* Header section */}
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-xl font-semibold text-gray-900">{activePage}</h1>
+              <div className="text-xs text-gray-400">最后更新：2024-11-11 14:30</div>
+            </div>
+
             {/* Filters Bar */}
             <div className="flex flex-wrap items-center gap-3 mb-8">
               <div className="relative group">
